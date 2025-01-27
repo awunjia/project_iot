@@ -30,6 +30,12 @@ Route::middleware(['authChecker'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
 
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
+    Route::get('/super-admin', function () {
+        return 'Super Admin Dashboard';
+    });
+});
+
 
 
 

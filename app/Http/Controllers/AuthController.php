@@ -118,6 +118,11 @@ class AuthController extends Controller
 
     public function resetPassword(ResetUser $req)
     {
+        if($req->password != $req->password_confirmation)
+        {
+            return redirect()->back()->with('error', 'Passwords do not match!');
+        }
+
         $status = Password::reset(
             $req->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {

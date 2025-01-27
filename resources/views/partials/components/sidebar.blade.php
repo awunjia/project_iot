@@ -13,7 +13,7 @@
   <li class="nav-item">
     <a class="nav-link collapsed" href="pages-faq.html">
       <i class="bi bi-question-circle"></i>
-      <span>Room Senesor</span>
+      <span>Room Sensor</span>
     </a>
   </li><!-- End F.A.Q Page Nav -->
 

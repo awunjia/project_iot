@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\SensorController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -12,6 +14,8 @@ Route::get('/clear-cache', function () {
 
     return response()->json(['message' => 'All caches cleared successfully.']);
 })->name('clear.cache')->middleware('auth');
+
+Route::redirect('/', '/home');
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::get('register', [AuthController::class, 'showRegister'])->name('register');
@@ -25,8 +29,9 @@ Route::get('reset-password/{token}', [AuthController::class, 'showResetPassword'
 Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 Route::middleware(['authChecker'])->group(function () {
-    Route::get('/', [HomeController::class, 'home'])->name('home');
-    Route::get('/room', [HomeController::class, 'room'])->name('room');
+    Route::get('home', [HomeController::class, 'home'])->name('home');
+    Route::resource('devices', DeviceController::class);
+    Route::resource('sensors', SensorController::class);
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
 

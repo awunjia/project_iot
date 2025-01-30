@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Device;
+use Illuminate\Support\Facades\Auth;
 
 class DeviceRepo
 {
@@ -29,8 +30,16 @@ class DeviceRepo
         return $device ? $device->delete() : false;
     }
 
-    public function getAllDevices()
+    public function getAllUserDevices()
     {
-        return Device::paginate(10);
+        $user_id = Auth::user()->id;
+        return Device::where('user_id', $user_id)->paginate(10);
     }
+
+    public function deviceCount()
+    {
+        $user_id = Auth::user()->id;
+        return Device::where('user_id', $user_id)->count();
+    }
+    
 }

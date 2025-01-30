@@ -69,4 +69,14 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    public function devices()
+    {
+        return $this->hasMany(Device::class);
+    }
+
+    public function sensors()
+    {
+        return $this->hasManyThrough(Sensor::class, Device::class);
+    }
 }

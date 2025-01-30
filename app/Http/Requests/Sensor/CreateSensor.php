@@ -23,8 +23,9 @@ class CreateSensor extends FormRequest
     {
         return [
             'device_id' => 'required|exists:devices,id',
-            'type' => 'required|string|in:temperature,pressure,motion,light,vibration,smoke,co_h2o,humidity,distance,temphum', 
-            'pin' => 'required|numeric|min:1|max:20', 
+            'type' => 'required|string',
+            'pin' => 'required|numeric|min:1|max:20',
+            'name' => 'required|string|min:3|max:225', 
         ];
     }
 }

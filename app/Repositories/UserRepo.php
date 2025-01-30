@@ -18,7 +18,7 @@ class UserRepo
 
     public function findUserById(int $id): ? User
     {
-        return User::find($id);
+        return User::findOrFail($id);
     }
 
     public function updateUser(int $id, array $data): User

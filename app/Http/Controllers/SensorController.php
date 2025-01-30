@@ -23,7 +23,7 @@ class SensorController extends Controller
      */
     public function index()
     {
-        $d['devices'] = $this->device->getAllDevices();
+        $d['devices'] = $this->device->getAllUserDevices();
         $d['sensors'] = $this->sensor->getAllSensors();
         return view('pages.sensor.index', $d);
     }
@@ -33,7 +33,7 @@ class SensorController extends Controller
      */
     public function store(CreateSensor $req)
     {
-        $data = $req->only(['device_id', 'type', 'pin']);
+        $data = $req->only(['device_id', 'type', 'pin', 'name']);
         $this->sensor->createSensor($data);
         return redirect()->back()->with('success', 'Sensor created successfully!');
     }
@@ -44,7 +44,7 @@ class SensorController extends Controller
     public function edit(string $id)
     {
         $d['sensors'] = $this->sensor->getAllSensors();
-        $d['devices'] = $this->device->getAllDevices();
+        $d['devices'] = $this->device->getAllUserDevices();
         $d['sensor'] = $this->sensor->findSensorById($id);
         return view('pages.sensor.edit', $d);
     }
@@ -54,7 +54,7 @@ class SensorController extends Controller
      */
     public function update(CreateSensor $req, $id)
     {
-        $data = $req->only(['device_id', 'type', 'pin']);
+        $data = $req->only(['device_id', 'type', 'pin', 'name']);
         $this->sensor->updateSensor($id, $data);
         return redirect()->route('sensors.index')->with('success', 'Sensor updated successfully!');
     }

@@ -10,8 +10,10 @@ use App\Http\Requests\User\LoginUser;
 use App\Http\Requests\User\ForgotUser;
 use App\Http\Requests\User\ResetUser;
 use App\Http\Requests\User\UpdateUser;
+use App\Http\Requests\User\ChangePassword;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Repositories\UserRepo;
 
@@ -139,9 +141,53 @@ class AuthController extends Controller
         return back()->withErrors(['email' => __($status)]);
     }
 
+    public function showProfile()
+    {
+        $data['user'] = Auth::user();
+        return view('pages.profile.view', $data);
+    }
 
+    public function updateProfile(Request $req)
+    {
+        //dd($req->all());
+        $user = Auth::user();
 
+        if ($req->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::delete($user->avatar);
+            }
 
+            $path = $req->file('avatar')->store('uploads', 'public');
+            $user->avatar = $path;
+        }
+
+        $user->name = $req->name;
+        $user->address = $req->address;
+        $user->phone = $req->phone;
+        $user->gender = $req->gender;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profile updated successfully!');
+    }
+
+    public function changePassword(ChangePassword $req)
+    {
+        $user = Auth::user();
+
+        if (!Hash::check($req->current_password, $user->password)) {
+            return redirect()->back()->with('error', 'Current password is incorrect!');
+        }
+
+        $user->password = Hash::make($req->new_password);
+        $user->save();
+
+        return redirect()->back()->with('success', 'Password changed successfully!');
+    }
+
+    public function accountSettings()
+    {
+        return view('pages.profile.settings');
+    }
 
 
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\SensorController;
+use App\Http\Controllers\SensorDataController;
 
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
@@ -32,6 +33,18 @@ Route::middleware(['authChecker'])->group(function () {
     Route::get('home', [HomeController::class, 'home'])->name('home');
     Route::resource('devices', DeviceController::class);
     Route::resource('sensors', SensorController::class);
+
+    Route::get('/my-profile', [AuthController::class, 'showProfile'])->name('profile.view');
+    Route::put('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/password/change', [AuthController::class, 'changePassword'])->name('password.change');
+    Route::get('/account/settings', [AuthController::class, 'accountSettings'])->name('account.settings');
+
+
+    Route::get('/my-sensors/{deviceId}', [SensorDataController::class, 'getSensors']);
+    Route::get('/sensor-data/show', [SensorDataController::class, 'showData'])->name('data.show');
+    Route::get('/sensor-data', [SensorDataController::class, 'index'])->name('data.index');
+    Route::post('/sensor-data', [SensorDataController::class, 'store'])->name('data.store');
+
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
 

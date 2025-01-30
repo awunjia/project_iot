@@ -9,10 +9,15 @@ class Device extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'location'];
+    protected $fillable = ['user_id', 'name', 'description', 'location'];
 
     public function sensors()
     {
         return $this->hasMany(Sensor::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

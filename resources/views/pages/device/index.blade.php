@@ -1,5 +1,7 @@
 @extends('partials.layouts.app')
 
+@section('title', 'Devices - Project IOT')
+
 @section('content')
 
 <div class="pagetitle">

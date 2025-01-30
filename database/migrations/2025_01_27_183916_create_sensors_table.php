@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('sensors', function (Blueprint $table) {
             $table->id();
             $table->foreignId('device_id')->constrained()->onDelete('cascade');
+            $table->string('name');
             $table->string('type');
             $table->integer('pin');
             $table->timestamps();

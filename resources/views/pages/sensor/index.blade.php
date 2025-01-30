@@ -1,5 +1,7 @@
 @extends('partials.layouts.app')
 
+@section('title', 'Sensors - Project IOT')
+
 @section('content')
 
 <div class="pagetitle">
@@ -47,7 +49,8 @@
                                         <tr>
                                             <th scope="col">#</th>
                                             <th scope="col">Device</th>
-                                            <th scope="col">Sensor Type</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Type</th>
                                             <th scope="col">GPIO Pin</th>
                                             <th scope="col">Created On</th>
                                             <th scope="col">ACTION</th>
@@ -58,6 +61,7 @@
                                             <tr>
                                                 <th scope="row">{{ $index + 1 }}</th>
                                                 <td>{{ $sensor->device->name }}</td>
+                                                <td>{{ ucfirst($sensor->name) }}</td>
                                                 <td>{{ ucfirst($sensor->type) }}</td>
                                                 <td>{{ $sensor->pin }}</td>
                                                 <td>{{ $sensor->created_at->format('jS M Y') }}</td>
@@ -68,8 +72,15 @@
                                                         </button>
                                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $sensor->id }}">
                                                             <li>
+                                                                <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#showModalSensor" 
+                                                                    data-id="{{ $sensor->id }}" data-name="{{$sensor->device->name}}" data-type="{{ $sensor->type }}" data-pin="{{ $sensor->pin }}"
+                                                                    data-created="{{ $sensor->created_at->format('jS M Y') }}" data-location="{{ $sensor->device->location }}">
+                                                                    <i class="bi bi-eye text-primary"></i> View Sensor
+                                                                </button>
+                                                            </li>
+                                                            <li>
                                                                 <a class="dropdown-item" href="{{ route('sensors.edit', $sensor->id) }}">
-                                                                    <i class="bi bi-pen text-primary"></i> Edit Sensor
+                                                                    <i class="bi bi-pen text-warning"></i> Edit Sensor
                                                                 </a>
                                                             </li>
                                                             <li>
@@ -98,36 +109,71 @@
                                 <form action="{{ route('sensors.store') }}" method="POST">
                                     @csrf 
 
-                                    <div class="row  my-5">
-                                        <div class="col-6">
+                                    <div class="row my-5">
+                                        <!-- Device Select -->
+                                        <div class="col-4">
                                             <label for="device_id" class="form-label">Device <span class="text-danger">*</span></label>
                                             <select name="device_id" id="device_id" class="form-select" required>
                                                 <option value="" selected disabled>Select a Device</option>
                                                 @foreach($devices as $device)
-                                                    <option value="{{ $device->id }}">{{ $device->name }} ({{ $device->location }})</option>
+                                                    <option value="{{ $device->id }}" {{ old('device_id') == $device->id ? 'selected' : '' }}>
+                                                        {{ $device->name }} ({{ $device->location }})
+                                                    </option>
                                                 @endforeach
                                             </select>
+                                            @error('device_id')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
-                                        <div class="col-6">
+                                        <!-- Sensor Name -->
+                                        <div class="col-4">
+                                            <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                                            <input type="text" name="name" class="form-control" id="name" value="{{ old('name') }}">
+                                            @error('name')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <!-- Sensor Type -->
+                                        <div class="col-4">
                                             <label for="type" class="form-label">Sensor Type <span class="text-danger">*</span></label>
                                             <select name="type" id="type" class="form-select" required>
                                                 <option value="" selected disabled>Select Sensor Type</option>
-                                                <option value="temperature">Temperature</option>
-                                                <option value="temphum">Temphum</option>
-                                                <option value="motion">Motion</option>
-                                                <option value="light">Light</option>
-                                                <option value="vibration">Vibration</option>
-                                                <option value="smoke">Smoke</option>
-                                                <option value="co_h2o">Co/H2O</option>
-                                                <option value="humidity">Humidity</option>
-                                                <option value="distance">Distance</option>
+                                                <option value="temperature" {{ old('type') == 'temperature' ? 'selected' : '' }}>Temperature</option>
+                                                <option value="temphum" {{ old('type') == 'temphum' ? 'selected' : '' }}>Temperature & Humidity</option>
+                                                <option value="humidity" {{ old('type') == 'humidity' ? 'selected' : '' }}>Humidity</option>
+                                                <option value="motion" {{ old('type') == 'motion' ? 'selected' : '' }}>Motion</option>
+                                                <option value="light" {{ old('type') == 'light' ? 'selected' : '' }}>Light</option>
+                                                <option value="vibration" {{ old('type') == 'vibration' ? 'selected' : '' }}>Vibration</option>
+                                                <option value="smoke" {{ old('type') == 'smoke' ? 'selected' : '' }}>Smoke</option>
+                                                <option value="gas" {{ old('type') == 'gas' ? 'selected' : '' }}>Gas</option>
+                                                <option value="co" {{ old('type') == 'co' ? 'selected' : '' }}>Carbon Monoxide (CO)</option>
+                                                <option value="co2" {{ old('type') == 'co2' ? 'selected' : '' }}>Carbon Dioxide (CO₂)</option>
+                                                <option value="pressure" {{ old('type') == 'pressure' ? 'selected' : '' }}>Pressure</option>
+                                                <option value="distance" {{ old('type') == 'distance' ? 'selected' : '' }}>Distance/Proximity</option>
+                                                <option value="infrared" {{ old('type') == 'infrared' ? 'selected' : '' }}>Infrared (IR)</option>
+                                                <option value="sound" {{ old('type') == 'sound' ? 'selected' : '' }}>Sound/Noise</option>
+                                                <option value="ph" {{ old('type') == 'ph' ? 'selected' : '' }}>pH Level</option>
+                                                <option value="water_level" {{ old('type') == 'water_level' ? 'selected' : '' }}>Water Level</option>
+                                                <option value="gps" {{ old('type') == 'gps' ? 'selected' : '' }}>GPS/Location</option>
+                                                <option value="current" {{ old('type') == 'current' ? 'selected' : '' }}>Current Sensor</option>
+                                                <option value="voltage" {{ old('type') == 'voltage' ? 'selected' : '' }}>Voltage Sensor</option>
+                                                <option value="magnetic" {{ old('type') == 'magnetic' ? 'selected' : '' }}>Magnetic Field</option>
+                                                <option value="air_quality" {{ old('type') == 'air_quality' ? 'selected' : '' }}>Air Quality</option>
+                                                <option value="soil_moisture" {{ old('type') == 'soil_moisture' ? 'selected' : '' }}>Soil Moisture</option>
+                                                <option value="uv" {{ old('type') == 'uv' ? 'selected' : '' }}>UV Radiation</option>
+                                                <option value="rfid" {{ old('type') == 'rfid' ? 'selected' : '' }}>RFID/NFC</option>
                                             </select>
+                                            @error('type')
+                                                <div class="text-danger">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
 
+                                    <!-- GPIO Pin Selection -->
                                     <div class="mb-12 my-5">
-                                        <label for="pin" class="form-label">Select GPIO Pin<span class="text-danger">*</span></label>
+                                        <label for="pin" class="form-label">Select GPIO Pin <span class="text-danger">*</span></label>
                                         <div class="d-flex flex-wrap">
                                             @for ($i = 1; $i <= 25; $i++)
                                                 <div class="form-check me-3">
@@ -138,13 +184,17 @@
                                                 </div>
                                             @endfor
                                         </div>
-                                    
+                                        @error('pin')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
 
+                                    <!-- Submit Button -->
                                     <div class="mt-5">
                                         <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>Create Sensor</button>
                                     </div>
                                 </form>
+
                             </div>
                         </div>        
                     </div>
@@ -160,6 +210,30 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="confirmDeleteSensorLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete sesnor for device <strong><span id="sensor"></span></strong>? This action CANNOT be undone!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" action="" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- show Sensor Modal -->
+<div class="modal fade" id="showModalSensor" tabindex="-1" aria-labelledby="confirmDeleteSensorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteSensorLabel">More About this.getAttribute('data-id')</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

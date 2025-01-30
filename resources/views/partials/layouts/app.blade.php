@@ -5,8 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Dashboard - Project IOT</title>
-  <meta content="" name="description">
+  <title>@yield('title')</title>  <meta content="" name="iot project">
   <meta content="" name="keywords">
 
   <!-- Favicons -->

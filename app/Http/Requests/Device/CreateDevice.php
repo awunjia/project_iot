@@ -22,7 +22,7 @@ class CreateDevice extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',  
+            'name' => 'required|string|min:3',  
             'description' => 'nullable|string',  
             'location' => 'required|string',
         ];

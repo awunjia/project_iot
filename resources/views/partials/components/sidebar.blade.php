@@ -24,6 +24,13 @@
             </a>
         </li><!-- End Sensors Nav -->
 
+        <li class="nav-item">
+            <a class="nav-link @if(Request::is('data.index')) active @else collapsed @endif" href="{{ route('data.index') }}">
+                <i class="bi bi-graph-up"></i>
+                <span>Sensor Data</span>
+            </a>
+        </li><!-- End Sensor Chart Nav -->
+
 
     </ul>
 

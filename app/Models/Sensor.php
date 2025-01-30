@@ -10,7 +10,7 @@ class Sensor extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['device_id', 'type', 'pin'];
+    protected $fillable = ['device_id', 'name', 'type', 'pin'];
 
     public function device()
     {
